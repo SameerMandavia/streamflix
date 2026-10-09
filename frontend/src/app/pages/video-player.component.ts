@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inj
 import { NgFor, NgIf } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, of, switchMap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import Hls from 'hls.js';
 import { MediaService, Playback } from '../media.service';
 
@@ -9,7 +10,7 @@ import { MediaService, Playback } from '../media.service';
 export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly route = inject(ActivatedRoute); private readonly media = inject(MediaService); private hls?: Hls;
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>; playback?: Playback; error = ''; private pendingUrl = '';
-  ngOnInit(): void { this.route.paramMap.pipe(switchMap(params => this.media.getPlayback(Number(params.get('movieId'))).pipe(catchError(() => of(null))))).subscribe(playback => { if (!playback) { this.error = 'This title is not ready for playback yet. An uploader must process its video first.'; return; } this.playback = playback; this.pendingUrl = playback.manifestUrl; setTimeout(() => this.attachPlayer()); }); }
+  ngOnInit(): void { this.route.paramMap.pipe(switchMap(params => this.media.getPlayback(Number(params.get('movieId'))).pipe(catchError((error: HttpErrorResponse) => { this.error = error.status === 402 ? 'An active subscription is required to watch this title.' : error.status === 404 ? 'This title is not ready for playback yet.' : 'Playback is temporarily unavailable.'; return of(null); })))).subscribe(playback => { if (!playback) return; this.playback = playback; this.pendingUrl = playback.manifestUrl; setTimeout(() => this.attachPlayer()); }); }
   ngAfterViewInit(): void { this.attachPlayer(); }
   ngOnDestroy(): void { this.hls?.destroy(); }
   private attachPlayer(): void { if (!this.video || !this.pendingUrl) return; const element = this.video.nativeElement; if (Hls.isSupported()) { this.hls = new Hls({ enableWorker: true }); this.hls.loadSource(this.pendingUrl); this.hls.attachMedia(element); } else if (element.canPlayType('application/vnd.apple.mpegurl')) element.src = this.pendingUrl; }

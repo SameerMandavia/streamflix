@@ -5,10 +5,12 @@ import com.streamflix.entity.*;
 import com.streamflix.repository.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@Transactional
 public class UserFeatureService {
     private final AuthService auth;
     private final MovieRepository movies;
@@ -23,6 +25,7 @@ public class UserFeatureService {
         this.history = history;
     }
 
+    @Transactional(readOnly = true)
     public List<MovieResponse> list(User user) {
         return watchlist.findByUserIdOrderByIdDesc(user.getId()).stream()
                 .map(item -> MovieResponse.from(item.getMovie())).toList();
@@ -38,11 +41,13 @@ public class UserFeatureService {
         watchlist.findByUserIdAndMovieId(user.getId(), movieId).ifPresent(watchlist::delete);
     }
 
+    @Transactional(readOnly = true)
     public List<FeatureDtos.WatchProgressResponse> continueWatching(User user) {
         return history.findByUserIdAndCompletedFalseOrderByLastWatchedAtDesc(user.getId()).stream().map(this::progress)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<FeatureDtos.WatchProgressResponse> history(User user) {
         return history.findByUserIdOrderByLastWatchedAtDesc(user.getId()).stream().map(this::progress).toList();
     }

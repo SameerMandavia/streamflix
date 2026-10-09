@@ -129,3 +129,19 @@ $env:ADMIN_EMAIL = "admin@example.com"
 ```
 
 On startup, the matching account is promoted to `ADMIN`. Admin video uploads use the existing local media workflow; poster files are stored under `MEDIA_ROOT/posters`. No paid service is required for the dashboard itself.
+
+## Production readiness
+
+Milestone 8 adds production-oriented configuration, Actuator health/metrics endpoints, request correlation logging, security headers, production environment validation, automated backend/frontend checks, Dockerfiles, GitHub Actions CI, and a PostgreSQL backup script. See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for deployment, monitoring, backup, recovery, and rollback procedures. Cloud resources are intentionally not provisioned by this repository.
+
+### Database credentials
+
+Spring Boot and Docker Compose both default to PostgreSQL user `streamflix` with password `streamflix`. If an existing local database was initialized with different credentials, set them in the current terminal before starting the backend:
+
+```powershell
+$env:DB_USERNAME = "your-existing-db-user"
+$env:DB_PASSWORD = "your-existing-db-password"
+mvn.cmd -s ..\maven-settings.xml spring-boot:run
+```
+
+Do not commit real database passwords. A persistent PostgreSQL volume keeps the credentials from its first initialization; changing Compose variables alone does not change that existing database user.

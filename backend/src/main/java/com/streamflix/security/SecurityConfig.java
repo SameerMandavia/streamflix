@@ -15,6 +15,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Configuration @EnableMethodSecurity
 public class SecurityConfig {
@@ -24,11 +26,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter, @Qualifier("corsConfigurationSource") CorsConfigurationSource corsSource) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(frame -> frame.deny()).contentTypeOptions(content -> {}).httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/movies/**", "/api/series/**", "/api/subscriptions/plans", "/api/webhooks/**", "/api/media/movies/posters/**", "/error").permitAll()
+                .requestMatchers("/api/auth/**", "/api/movies/**", "/api/series/**", "/api/subscriptions/plans", "/api/webhooks/**", "/api/media/movies/posters/**", "/actuator/health", "/error").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
@@ -37,9 +40,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origin:http://localhost:4200}") String allowedOrigin) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(List.of(allowedOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

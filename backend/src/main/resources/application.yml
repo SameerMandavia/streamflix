@@ -9,6 +9,16 @@ spring:
     hibernate.ddl-auto: validate
   flyway.enabled: true
 server.port: ${PORT:8080}
+server.forward-headers-strategy: framework
+server.tomcat.max-swallow-size: 100MB
+spring.servlet.multipart.max-file-size: ${MAX_FILE_SIZE:2GB}
+spring.servlet.multipart.max-request-size: ${MAX_REQUEST_SIZE:2GB}
+management:
+  endpoints.web.exposure.include: health,info,metrics
+  endpoint.health.show-details: never
+logging:
+  level:
+    com.streamflix: INFO
 app:
   jwt:
     # Replace this in deployed environments with a random secret of at least 32 characters.
@@ -23,3 +33,5 @@ app:
     webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
   admin:
     email: ${ADMIN_EMAIL:}
+  cors:
+    allowed-origin: ${FRONTEND_URL:http://localhost:4200}
