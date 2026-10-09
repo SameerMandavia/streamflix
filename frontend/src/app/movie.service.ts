@@ -11,6 +11,6 @@ export class MovieService {
   getMovies(): Observable<Movie[]> { return this.http.get<Movie[]>(this.apiUrl); }
   getTrending(): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/trending`); }
   getPopular(): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/popular`); }
-  search(query: string): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/search`, { params: { q: query } }); }
+  search(query: string, genre = ''): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/search`, { params: { q: query, ...(genre ? { genre } : {}) } }); }
   getMovie(id: number): Observable<Movie> { return this.http.get<Movie>(`${this.apiUrl}/${id}`); }
 }

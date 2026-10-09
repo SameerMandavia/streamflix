@@ -77,3 +77,14 @@ Available auth endpoints:
 - `POST /api/profiles` with a Bearer token and `{ "name", "avatarKey" }`
 
 The Angular app provides `/login`, `/register`, and protected `/profiles` routes. Tokens are stored in browser local storage for this development milestone and attached automatically to API requests. Use HTTPS and a hardened token/cookie strategy before production deployment.
+
+## User features
+
+Milestone 4 adds authenticated user content and episodic catalogue APIs:
+
+- `GET/POST/DELETE /api/me/watchlist` for My List
+- `GET /api/me/continue-watching` and `GET/POST /api/me/history` for viewing activity
+- `GET /api/series` and `GET /api/series/{id}` for series, seasons, and episodes
+- `GET /api/movies/search?q=&genre=` for title and genre filters
+
+The frontend exposes protected `/my-list` and `/history` screens, a genre filter on `/search`, and series episode details at `/series/:id`.

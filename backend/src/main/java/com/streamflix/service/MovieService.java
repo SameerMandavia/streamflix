@@ -8,9 +8,29 @@ import java.util.List;
 @Service
 public class MovieService {
     private final MovieRepository repository;
-    public MovieService(MovieRepository repository) { this.repository = repository; }
-    public List<MovieResponse> all() { return repository.findAll().stream().map(MovieResponse::from).toList(); }
-    public List<MovieResponse> trending() { return repository.findTop10ByOrderByCreatedAtDesc().stream().map(MovieResponse::from).toList(); }
-    public List<MovieResponse> search(String query) { return repository.findByTitleContainingIgnoreCaseOrGenreContainingIgnoreCase(query, query).stream().map(MovieResponse::from).toList(); }
-    public MovieResponse byId(Long id) { return repository.findById(id).map(MovieResponse::from).orElseThrow(() -> new IllegalArgumentException("Movie not found: " + id)); }
+
+    public MovieService(MovieRepository repository) {
+        this.repository = repository;
+    }
+
+    public List<MovieResponse> all() {
+        return repository.findAll().stream().map(MovieResponse::from).toList();
+    }
+
+    public List<MovieResponse> trending() {
+        return repository.findTop10ByOrderByCreatedAtDesc().stream().map(MovieResponse::from).toList();
+    }
+
+    public List<MovieResponse> search(String query, String genre) {
+        var movies = genre == null || genre.isBlank()
+                ? repository.findByTitleContainingIgnoreCaseOrGenreContainingIgnoreCase(query, query)
+                : query == null || query.isBlank() ? repository.findByGenreIgnoreCase(genre)
+                        : repository.findByTitleContainingIgnoreCaseAndGenreContainingIgnoreCase(query, genre);
+        return movies.stream().map(MovieResponse::from).toList();
+    }
+
+    public MovieResponse byId(Long id) {
+        return repository.findById(id).map(MovieResponse::from)
+                .orElseThrow(() -> new IllegalArgumentException("Movie not found: " + id));
+    }
 }
