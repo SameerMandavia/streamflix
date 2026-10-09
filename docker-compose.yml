@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: streamflix-postgres
+    environment:
+      POSTGRES_DB: streamflix
+      POSTGRES_USER: ${DB_USERNAME:-streamflix}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-streamflix}
+    ports:
+      - "5432:5432"
+    volumes:
+      - streamflix-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
+      DB_URL: jdbc:postgresql://postgres:5432/streamflix
+      DB_USERNAME: ${DB_USERNAME:-streamflix}
+      DB_PASSWORD: ${DB_PASSWORD:-streamflix}
+      JWT_SECRET: ${JWT_SECRET:-streamflix-local-development-secret-change-me-32chars}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      MEDIA_ROOT: /app/media
+    ports:
+      - "8080:8080"
+    volumes:
+      - streamflix-media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  streamflix-postgres-data:
+  streamflix-media:
