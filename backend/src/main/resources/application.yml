@@ -9,3 +9,8 @@ spring:
     hibernate.ddl-auto: validate
   flyway.enabled: true
 server.port: ${PORT:8080}
+app:
+  jwt:
+    # Replace this in deployed environments with a random secret of at least 32 characters.
+    secret: ${JWT_SECRET:streamflix-local-development-secret-change-me-32chars}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}

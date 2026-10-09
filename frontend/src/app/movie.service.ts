@@ -7,5 +7,10 @@ export interface Movie { id: number; title: string; description: string; release
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly http = inject(HttpClient);
-  getMovies(): Observable<Movie[]> { return this.http.get<Movie[]>('http://localhost:8080/api/movies'); }
+  private readonly apiUrl = 'http://localhost:8080/api/movies';
+  getMovies(): Observable<Movie[]> { return this.http.get<Movie[]>(this.apiUrl); }
+  getTrending(): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/trending`); }
+  getPopular(): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/popular`); }
+  search(query: string): Observable<Movie[]> { return this.http.get<Movie[]>(`${this.apiUrl}/search`, { params: { q: query } }); }
+  getMovie(id: number): Observable<Movie> { return this.http.get<Movie>(`${this.apiUrl}/${id}`); }
 }
