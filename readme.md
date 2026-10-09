@@ -99,3 +99,23 @@ Milestone 5 uses local storage and FFmpeg, with no paid cloud dependency:
 - HLS: the returned short-lived manifest URL contains a signed five-minute playback token
 
 Install FFmpeg and make `ffmpeg` available on `PATH`, or set `FFMPEG_PATH` to its executable. Set `MEDIA_ROOT` to change the local media directory; the default is `./media`. Uploaded originals, HLS segments, and subtitles are ignored by Git. The frontend player is available at `/watch/{movieId}` after a processed asset is ready.
+
+## Subscriptions and billing
+
+Milestone 6 is wired for Stripe test mode only. Configure these environment variables before using Checkout:
+
+```powershell
+$env:STRIPE_SECRET_KEY = "sk_test_..."
+$env:STRIPE_WEBHOOK_SECRET = "whsec_..."
+$env:FRONTEND_URL = "http://localhost:4200"
+```
+
+Replace the placeholder `stripe_price_id` values from the V6 migration/database with Stripe test-mode recurring Price IDs. Start the backend, expose `/api/webhooks/stripe` through the Stripe CLI or a test webhook endpoint, then open `/subscriptions` while signed in. Signed webhook events update local subscription status; playback is denied unless the local subscription is active or trialing.
+
+Billing endpoints:
+
+- `GET /api/subscriptions/plans`
+- `GET /api/subscriptions/me` with a Bearer token
+- `POST /api/subscriptions/checkout` with `{ "planCode": "basic" }`
+- `POST /api/subscriptions/cancel` with a Bearer token
+- `POST /api/webhooks/stripe` with Stripe’s `Stripe-Signature` header

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class MediaStorageService {
     private final Path root; private final String ffmpegPath; private final MovieRepository movies; private final VideoAssetRepository assets; private final SubtitleRepository subtitles; private final JwtService jwt;
     public MediaStorageService(@Value("${app.media.root:./media}") String root, @Value("${app.media.ffmpeg-path:ffmpeg}") String ffmpegPath, MovieRepository movies, VideoAssetRepository assets, SubtitleRepository subtitles, JwtService jwt) { this.root = Paths.get(root).toAbsolutePath().normalize(); this.ffmpegPath = ffmpegPath; this.movies = movies; this.assets = assets; this.subtitles = subtitles; this.jwt = jwt; }
