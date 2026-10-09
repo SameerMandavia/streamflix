@@ -22,6 +22,7 @@ public class Episode {
 
     protected Episode() {
     }
+    public Episode(Season season, Integer episodeNumber, String title, String description, Integer durationMinutes) { this.season = season; this.episodeNumber = episodeNumber; this.title = title; this.description = description; this.durationMinutes = durationMinutes; }
 
     public Long getId() {
         return id;
@@ -42,4 +43,6 @@ public class Episode {
     public Integer getDurationMinutes() {
         return durationMinutes;
     }
+    public Season getSeason() { return season; }
+    public void update(Integer episodeNumber, String title, String description, Integer durationMinutes) { this.episodeNumber = episodeNumber; this.title = title; this.description = description; this.durationMinutes = durationMinutes; }
 }

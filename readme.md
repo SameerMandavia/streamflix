@@ -119,3 +119,13 @@ Billing endpoints:
 - `POST /api/subscriptions/checkout` with `{ "planCode": "basic" }`
 - `POST /api/subscriptions/cancel` with a Bearer token
 - `POST /api/webhooks/stripe` with Stripe’s `Stripe-Signature` header
+
+## Admin dashboard
+
+Milestone 7 adds an admin-only dashboard at `/admin` for catalogue publishing, movie creation, poster uploads, user/subscription summaries, and basic analytics. The backend protects `/api/admin/**` with the `ADMIN` role. There is no default admin account: register a normal account, then set its email before starting the backend:
+
+```powershell
+$env:ADMIN_EMAIL = "admin@example.com"
+```
+
+On startup, the matching account is promoted to `ADMIN`. Admin video uploads use the existing local media workflow; poster files are stored under `MEDIA_ROOT/posters`. No paid service is required for the dashboard itself.

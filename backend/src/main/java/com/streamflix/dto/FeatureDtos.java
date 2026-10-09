@@ -21,7 +21,7 @@ public final class FeatureDtos {
     }
 
     public record SeriesResponse(Long id, String title, String description, Integer releaseYear, String genre,
-            String posterUrl, List<SeasonResponse> seasons) {
+            String posterUrl, List<SeasonResponse> seasons, boolean published) {
     }
 
     public static EpisodeResponse episode(Episode e) {

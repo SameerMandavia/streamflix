@@ -21,11 +21,11 @@ public class SeriesService {
     }
 
     public List<FeatureDtos.SeriesResponse> all() {
-        return series.findAll().stream().map(this::response).toList();
+        return series.findAll().stream().filter(Series::isPublished).map(this::response).toList();
     }
 
     public FeatureDtos.SeriesResponse byId(Long id) {
-        return series.findById(id).map(this::response)
+        return series.findById(id).filter(Series::isPublished).map(this::response)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Series not found"));
     }
 
@@ -36,6 +36,6 @@ public class SeriesService {
                                 .map(FeatureDtos::episode).toList()))
                 .toList();
         return new FeatureDtos.SeriesResponse(s.getId(), s.getTitle(), s.getDescription(), s.getReleaseYear(),
-                s.getGenre(), s.getPosterUrl(), seasonResponses);
+                s.getGenre(), s.getPosterUrl(), seasonResponses, s.isPublished());
     }
 }

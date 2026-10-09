@@ -1,6 +1,7 @@
 package com.streamflix.service;
 
 import com.streamflix.dto.MovieResponse;
+import com.streamflix.entity.Movie;
 import com.streamflix.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,11 +15,11 @@ public class MovieService {
     }
 
     public List<MovieResponse> all() {
-        return repository.findAll().stream().map(MovieResponse::from).toList();
+        return repository.findAll().stream().filter(Movie::isPublished).map(MovieResponse::from).toList();
     }
 
     public List<MovieResponse> trending() {
-        return repository.findTop10ByOrderByCreatedAtDesc().stream().map(MovieResponse::from).toList();
+        return repository.findTop10ByOrderByCreatedAtDesc().stream().filter(Movie::isPublished).map(MovieResponse::from).toList();
     }
 
     public List<MovieResponse> search(String query, String genre) {
@@ -26,11 +27,11 @@ public class MovieService {
                 ? repository.findByTitleContainingIgnoreCaseOrGenreContainingIgnoreCase(query, query)
                 : query == null || query.isBlank() ? repository.findByGenreIgnoreCase(genre)
                         : repository.findByTitleContainingIgnoreCaseAndGenreContainingIgnoreCase(query, genre);
-        return movies.stream().map(MovieResponse::from).toList();
+        return movies.stream().filter(Movie::isPublished).map(MovieResponse::from).toList();
     }
 
     public MovieResponse byId(Long id) {
-        return repository.findById(id).map(MovieResponse::from)
+        return repository.findById(id).filter(Movie::isPublished).map(MovieResponse::from)
                 .orElseThrow(() -> new IllegalArgumentException("Movie not found: " + id));
     }
 }

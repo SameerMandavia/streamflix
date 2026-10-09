@@ -14,6 +14,7 @@ public class Movie {
     @Column(nullable = false) private Integer durationMinutes;
     @Column(nullable = false) private String genre;
     @Column(nullable = false) private String posterUrl;
+    @Column(nullable = false) private boolean published = true;
     @Column(nullable = false, updatable = false) private Instant createdAt;
 
     protected Movie() {}
@@ -29,4 +30,7 @@ public class Movie {
     public Integer getDurationMinutes() { return durationMinutes; }
     public String getGenre() { return genre; }
     public String getPosterUrl() { return posterUrl; }
+    public boolean isPublished() { return published; }
+    public void update(String title, String description, Integer releaseYear, Integer durationMinutes, String genre, String posterUrl) { this.title = title; this.description = description; this.releaseYear = releaseYear; this.durationMinutes = durationMinutes; this.genre = genre; if (posterUrl != null && !posterUrl.isBlank()) this.posterUrl = posterUrl; }
+    public void setPublished(boolean published) { this.published = published; }
 }

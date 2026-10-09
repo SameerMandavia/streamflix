@@ -30,7 +30,7 @@ public class AuthService {
     }
     public User user(String email) { return users.findByEmailIgnoreCase(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found")); }
     public AuthDtos.ProfileResponse profile(Profile profile) { return new AuthDtos.ProfileResponse(profile.getId(), profile.getName(), profile.getAvatarKey()); }
-    public AuthDtos.AuthResponse response(User user) { return new AuthDtos.AuthResponse(jwt.issue(user.getEmail()), user.getEmail(), profiles.findByUserIdOrderById(user.getId()).stream().map(this::profile).toList()); }
+    public AuthDtos.AuthResponse response(User user) { return new AuthDtos.AuthResponse(jwt.issue(user.getEmail()), user.getEmail(), user.getRole(), profiles.findByUserIdOrderById(user.getId()).stream().map(this::profile).toList()); }
     public List<AuthDtos.ProfileResponse> profiles(User user) { return profiles.findByUserIdOrderById(user.getId()).stream().map(this::profile).toList(); }
     public AuthDtos.ProfileResponse createProfile(User user, AuthDtos.CreateProfileRequest request) {
         if (profiles.existsByUserIdAndNameIgnoreCase(user.getId(), request.name().trim())) throw new ResponseStatusException(HttpStatus.CONFLICT, "That profile name already exists");

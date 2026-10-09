@@ -31,6 +31,12 @@ public class MediaStorageService {
             VideoAsset asset = assets.findByMovieId(movieId).orElseGet(() -> new VideoAsset(movie, root.relativize(source).toString())); asset.processing(); asset = assets.save(asset); process(asset, source); return response(asset);
         } catch (IOException ex) { throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store the video", ex); }
     }
+    public void uploadPoster(Long movieId, MultipartFile file, String baseUrl) {
+        if (file == null || file.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A poster file is required");
+        Movie movie = movies.findById(movieId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found"));
+        try { Path dir = root.resolve("posters"); Files.createDirectories(dir); String name = UUID.randomUUID() + extension(file.getOriginalFilename(), ".jpg"); Path target = dir.resolve(name).normalize(); file.transferTo(target); movie.update(movie.getTitle(), movie.getDescription(), movie.getReleaseYear(), movie.getDurationMinutes(), movie.getGenre(), baseUrl + "/api/media/movies/posters/" + name); movies.save(movie); } catch (IOException ex) { throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store poster", ex); }
+    }
+    public ResponseEntity<ByteArrayResource> poster(String filename) { Path target = root.resolve("posters").resolve(filename).normalize(); if (!target.startsWith(root.resolve("posters")) || !Files.exists(target)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Poster not found"); try { return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new ByteArrayResource(Files.readAllBytes(target))); } catch (IOException ex) { throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not read poster", ex); } }
     public MediaDtos.SubtitleResponse uploadSubtitle(Long movieId, String language, String label, MultipartFile file, String baseUrl) {
         VideoAsset asset = asset(movieId); String code = language == null || language.isBlank() ? "en" : language.replaceAll("[^a-zA-Z-]", "");
         if (file == null || file.isEmpty() || !file.getOriginalFilename().toLowerCase().endsWith(".vtt")) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subtitle must be a non-empty .vtt file");

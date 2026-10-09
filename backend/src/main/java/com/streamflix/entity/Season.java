@@ -18,6 +18,7 @@ public class Season {
 
     protected Season() {
     }
+    public Season(Series series, Integer seasonNumber, String title) { this.series = series; this.seasonNumber = seasonNumber; this.title = title; }
 
     public Long getId() {
         return id;
@@ -30,4 +31,6 @@ public class Season {
     public String getTitle() {
         return title;
     }
+    public Series getSeries() { return series; }
+    public void update(Integer seasonNumber, String title) { this.seasonNumber = seasonNumber; this.title = title; }
 }
