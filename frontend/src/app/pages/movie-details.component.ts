@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of, switchMap } from 'rxjs';
 import { MovieService } from '../movie.service';
 import { AuthService } from '../auth.service';
@@ -11,9 +11,9 @@ import { UserFeatureService } from '../user-feature.service';
   <main class="content-shell page-space empty-state" *ngIf="(movie$ | async) === null">Movie not found.</main>
 ` })
 export class MovieDetailsComponent {
-  private readonly route = inject(ActivatedRoute); private readonly service = inject(MovieService); readonly auth = inject(AuthService); private readonly features = inject(UserFeatureService);
+  private readonly route = inject(ActivatedRoute); private readonly router = inject(Router); private readonly service = inject(MovieService); readonly auth = inject(AuthService); private readonly features = inject(UserFeatureService);
   saved = false; message = '';
   readonly movie$ = this.route.paramMap.pipe(switchMap(params => this.service.getMovie(Number(params.get('id'))).pipe(catchError(() => of(null)))));
-  start(id: number): void { if (!this.auth.isLoggedIn()) { this.message = 'Sign in to track your watch progress.'; return; } this.features.recordProgress(id, 1).subscribe({ next: () => this.message = 'Added to Continue Watching.', error: () => this.message = 'Could not save progress.' }); }
+  start(id: number): void { if (!this.auth.isLoggedIn()) { this.message = 'Sign in to watch and track your progress.'; return; } this.features.recordProgress(id, 1).subscribe({ next: () => void this.router.navigate(['/watch', id]), error: () => this.message = 'Could not start playback.' }); }
   save(id: number): void { this.features.addToWatchlist(id).subscribe({ next: () => { this.saved = true; this.message = 'Added to My List.'; }, error: () => this.message = 'Could not update My List.' }); }
 }

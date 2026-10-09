@@ -8,6 +8,7 @@ import { ProfilesComponent } from './pages/profiles.component';
 import { MyListComponent } from './pages/my-list.component';
 import { HistoryComponent } from './pages/history.component';
 import { SeriesDetailsComponent } from './pages/series-details.component';
+import { VideoPlayerComponent } from './pages/video-player.component';
 import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'search', component: SearchComponent, title: 'StreamFlix — Search' },
   { path: 'movies/:id', component: MovieDetailsComponent, title: 'StreamFlix — Movie' },
   { path: 'series/:id', component: SeriesDetailsComponent, title: 'StreamFlix — Series' },
+  { path: 'watch/:movieId', component: VideoPlayerComponent, canActivate: [authGuard], title: 'StreamFlix — Player' },
   { path: 'login', component: LoginComponent, title: 'StreamFlix — Login' },
   { path: 'register', component: RegisterComponent, title: 'StreamFlix — Register' },
   { path: 'profiles', component: ProfilesComponent, canActivate: [authGuard], title: 'StreamFlix — Profiles' },

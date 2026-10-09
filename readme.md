@@ -88,3 +88,14 @@ Milestone 4 adds authenticated user content and episodic catalogue APIs:
 - `GET /api/movies/search?q=&genre=` for title and genre filters
 
 The frontend exposes protected `/my-list` and `/history` screens, a genre filter on `/search`, and series episode details at `/series/:id`.
+
+## Video streaming
+
+Milestone 5 uses local storage and FFmpeg, with no paid cloud dependency:
+
+- Upload: `POST /api/media/movies/{movieId}/upload` as an authenticated multipart request with field `file`
+- Subtitles: `POST /api/media/movies/{movieId}/subtitles?language=en&label=English` as an authenticated `.vtt` multipart upload
+- Playback token: `GET /api/media/movies/{movieId}/playback-token` with a Bearer token
+- HLS: the returned short-lived manifest URL contains a signed five-minute playback token
+
+Install FFmpeg and make `ffmpeg` available on `PATH`, or set `FFMPEG_PATH` to its executable. Set `MEDIA_ROOT` to change the local media directory; the default is `./media`. Uploaded originals, HLS segments, and subtitles are ignored by Git. The frontend player is available at `/watch/{movieId}` after a processed asset is ready.
