@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: streamflix-postgres
+    environment:
+      POSTGRES_DB: streamflix
+      POSTGRES_USER: streamflix
+      POSTGRES_PASSWORD: streamflix
+    ports:
+      - "5432:5432"
+    volumes:
+      - streamflix-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamflix -d streamflix"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  streamflix-postgres-data:

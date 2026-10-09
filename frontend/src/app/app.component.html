@@ -1,0 +1,7 @@
+<main class="shell">
+  <header class="nav"><div class="brand">STREAM<span>FLIX</span></div><span class="status">MILESTONE 1 · CATALOGUE</span></header>
+  <section class="hero"><p class="eyebrow">WELCOME TO YOUR NEXT STORY</p><h1>Stories worth<br><em>staying in for.</em></h1><p class="intro">A small, hand-picked catalogue for a world of big-screen moments.</p></section>
+  <section class="catalogue"><div class="section-heading"><div><p class="eyebrow">FROM THE DATABASE</p><h2>Featured movies</h2></div><span class="pill">LIVE CATALOGUE</span></div>
+    <div class="grid" *ngIf="movies$ | async as movies"><article class="card" *ngFor="let movie of movies"><img [src]="movie.posterUrl" [alt]="movie.title + ' poster'"><div class="card-body"><div class="meta"><span>{{ movie.genre }}</span><span>{{ movie.releaseYear }}</span><span>{{ movie.durationMinutes }} min</span></div><h3>{{ movie.title }}</h3><p>{{ movie.description }}</p></div></article></div>
+  </section>
+</main>

@@ -1,0 +1,11 @@
+spring:
+  application.name: streamflix-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/streamflix}
+    username: ${DB_USERNAME:streamflix}
+    password: ${DB_PASSWORD:streamflix}
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: validate
+  flyway.enabled: true
+server.port: ${PORT:8080}
